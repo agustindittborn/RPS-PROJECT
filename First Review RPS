@@ -1,0 +1,175 @@
+import random
+# In this game there are three option that the human player can chose
+moves = ['rock', 'paper', 'scissors']
+
+
+# I. We are going to define the players that are involve in this game
+class Player:
+    my_move = random.choice(moves)
+    their_move = random.choice(moves)
+
+    # This move means that this player always going to return rock
+    def move(self):
+        return 'rock'
+
+    def learn(self, my_move, their_move):
+        pass
+
+
+# Human Player: This player is the user that has to make a choice
+# between the 3 options
+class HumanPlayer(Player):
+    def move(self):
+        # With the input we tell the human to chose and write one
+        # of the options (rock, paper or scissors) and we
+        # call it "my_move"
+        my_move = input("rock, paper, scissors > ")
+        # After the player write the answer we are going to check
+        # if it is contain or not in "moves"
+        # While the word written by the player is not contain in
+        # "moves" the game is going to print and alert and give the
+        # human player another chance to re write it correctly
+        while my_move.lower() not in moves:
+            print("Try again!! Type one of the options")
+            my_move = input("rock, paper, scissors > ")
+        # When the the word written by the player its correct the
+        # game is going to return the move of the player, that
+        # is called "my_move" in the game
+        return my_move
+
+
+# Computer player 1: We create the random player.
+# This mean that all the choices of this player will be unpredicteble
+class RandomPlayer(Player):
+    def move(self):
+        return random.choice(moves)
+
+
+# Computer player 2: We create the player that imitates what the
+# human player did in the previous round
+class ReflectPlayer(Player):
+    def move(self):
+        return self.my_move
+
+    def learn(self, my_move, their_move):
+        self.my_move = their_move
+
+
+# Computer player 3: We create the last player. The one that
+# cycles throgh the three moves
+class CyclePlayer(Player):
+    def move(self):
+        # If the last move of this player is rock for the next
+        # round this player will return scissors
+        if self.my_last_move == "rock":
+            return "scissors"
+        # If the last move of this player is scissors for
+        # the next round this player will return rock
+        elif self.my_last_move == "scissors":
+            return "paper"
+        # If the last move of this player is paper for the
+        # next round this player will return rock
+        elif self.my_last_move == "paper":
+            return "rock"
+        # For any other option this player will return a
+        # random choice of "moves"
+        else:
+            return random.choice(moves)
+
+    def learn(self, my_last_move):
+        self.my_last_move = my_last_move
+
+
+# II. In this section we have to determine the rules
+# of the game
+class Game:
+    # Class variables to store the scores.
+    # We start human = 0 and computer = 0
+    countp1 = 0
+    countp2 = 0
+
+    def __init__(self, p1, p2):
+        self.p1 = p1
+        self.p2 = p2
+
+    # Here we define wich move wins the other one following
+    # the traditional rules of this game
+    def beats(self, one, two):
+        return ((one == 'rock' and two == 'scissors') or
+                (one == 'scissors' and two == 'paper') or
+                (one == 'paper' and two == 'rock'))
+
+    # Here we define the rounds and the count of the players
+    def play_round(self):
+        move1 = self.p1.move()  # move1 is the move of the
+        # player 1, the human player
+        move2 = self.p2.move()  # move2 is the move of the
+        # player 2, that is going to be one of the computer player
+        # we defined above.
+        # If move1 (Player1) beats move2 (Player2), following the
+        # rules we defined above, the the count of the score for
+        # player one is going to increase in 1
+        if self.beats(move1, move2):
+            self.countp1 += 1
+            result = ("YOU WIN THIS ROUND")
+        # if move2 (Player2) beats move1 (Player1), following the rules
+        # we defined above, the the count of the score for player two
+        # is going to increase in 1
+        elif self.beats(move2, move1):
+            self.countp2 += 1
+            result = ("COMPUTER WIN THIS ROUND")
+        # if move1 (Player1) is equal to move2 (Player2) the game is
+        # not going to add anything to the count because it is a tie
+        else:
+            result = ("ITS A TIE")
+
+        print(f"You chose: {move1}")
+        print(f"Computer chose: {move2}")
+        print(f"---> {result} <---")
+        print(f"Score: YOU: {self.countp1}, COMPUTER: {self.countp2} \n")
+
+        self.p1.learn(move1, move2)
+        self.p2.learn(move2, move1)
+
+    def play_game(self):
+        # For start the game we are going to print this frase
+        print("Rock Paper Scissors, Go!")
+        # Here we do a For Loop with a range of 5.
+        # This mean that we are going to play five rounds
+        for round in range(5):
+            # In this five rounds we are going to print the
+            # number of the round we are playing starting from 0
+            print(f"Round {round}:")
+            # And we are going to call de function we define
+            # above that contains the definition of each round
+            self.play_round()
+        # When the five rounds are over we are going to
+        # print "Game Over"
+        print("Game over!")
+        # Also we are going to anounce the winner
+        # If the acumulate scores of the player 1 (human player)
+        # is higher than the score of the player 2 (computer player)
+        # we are going to print that the winner is player number 1
+        if self.countp1 > self.countp2:
+            print("YOU ARE THE WINNER")
+        # If the acumulate scores are the same we are going to
+        # print that its a tie
+        elif self.countp1 == self.countp2:
+            print("IT IS A TIE")
+        # for every other option the player 2 win
+        else:
+            print("COMPUTER IS THE WINNER")
+
+
+# We are going to call the functions to play the game
+if __name__ == '__main__':
+    # Here we define wich one is the player 1 and the player 2.
+    # In this case Player 1 = Human Player and Player 2 is a
+    # random choice bewteen the computer players we defined above
+    p1 = HumanPlayer()
+    p2 = random.choice([ReflectPlayer(), RandomPlayer(), CyclePlayer()])
+
+    game = Game(p1, p2)
+    # We call game.play_game to define the players
+    # and start with the rounds
+    game.play_game()
