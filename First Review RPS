@@ -61,30 +61,22 @@ class CyclePlayer(Player):
     def move(self):
         # If the last move of this player is rock for the next
         # round this player will return scissors
-        if self.my_last_move == "rock":
-            return "scissors"
+        if self.my_move == "rock":
+            return "paper"
         # If the last move of this player is scissors for
         # the next round this player will return rock
-        elif self.my_last_move == "scissors":
-            return "paper"
-        # If the last move of this player is paper for the
-        # next round this player will return rock
-        elif self.my_last_move == "paper":
-            return "rock"
-        # For any other option this player will return a
-        # random choice of "moves"
+        elif self.my_move == "paper":
+            return "scissors"
+        # For any other option this player will return rock
         else:
-            return random.choice(moves)
-
-    def learn(self, my_last_move):
-        self.my_last_move = my_last_move
+            return "rock"
 
 
 # II. In this section we have to determine the rules
 # of the game
 class Game:
     # Class variables to store the scores.
-    # We start human = 0 and computer = 0
+    # We start with human = 0 and computer = 0
     countp1 = 0
     countp2 = 0
 
@@ -104,7 +96,7 @@ class Game:
         move1 = self.p1.move()  # move1 is the move of the
         # player 1, the human player
         move2 = self.p2.move()  # move2 is the move of the
-        # player 2, that is going to be one of the computer player
+        # player 2, that is going to be one of the computer players
         # we defined above.
         # If move1 (Player1) beats move2 (Player2), following the
         # rules we defined above, the the count of the score for
